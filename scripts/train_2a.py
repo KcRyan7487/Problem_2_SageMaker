@@ -8,6 +8,11 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
+# This will be used in the def model_fn at the end
+# He notes in this function that the naming is important here:
+# "this should have the same name as the serialized model in the main method"
+MODEL_FILENAME = "model.pkl"
+
 
 def find_training_csv(train_dir: str) -> str:
     expected = os.path.join(train_dir, "winequality-red.csv")
@@ -49,7 +54,7 @@ if __name__ == "__main__":
     rmse = float(np.sqrt(mean_squared_error(y_test, preds)))
     print(f"RMSE: {rmse:.4f}")
 
-    model_path = os.path.join(model_dir, "model.pkl")
+    model_path = os.path.join(model_dir, MODEL_FILENAME)
     joblib.dump(model, model_path)
     print(f"Saved model to: {model_path}")
 
@@ -58,3 +63,11 @@ if __name__ == "__main__":
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f)
     print(f"Saved metrics to: {metrics_path}")
+
+
+def model_fn(model_dir: str):
+    # Must match the serialized model filename used during training.
+    # So i.e. usualy we've been using "model.pkl" 
+    # Thus setting it to that in the top defined varable we use down here
+    model_path = os.path.join(model_dir, MODEL_FILENAME)
+    return joblib.load(model_path)
