@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+nginx -c /opt/program/nginx.conf
+gunicorn --timeout 60 --workers 1 --bind unix:/tmp/gunicorn.sock wsgi:app
